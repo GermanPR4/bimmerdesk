@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "tauri-app",
+  "productName": "BMW Toolbox",
   "version": "0.1.0",
   "identifier": "com.bimmerdesk.bmwtoolbox",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "tauri-app",
+        "title": "BMW Toolbox",
         "width": 800,
         "height": 600
       }
