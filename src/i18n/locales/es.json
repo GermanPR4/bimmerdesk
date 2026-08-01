@@ -1,0 +1,10 @@
+{
+  "app": {
+    "name": "BMW Toolbox"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar"
+  }
+}
