@@ -1,9 +1,12 @@
-mod command_bus;
-mod db;
-mod domain;
-mod module;
-mod protocol;
-mod transport;
+// pub: los tests de integración en src-tauri/tests/ compilan el crate como
+// caja negra y necesitan acceso a estos módulos (ver
+// module_wiring_integration.rs).
+pub mod command_bus;
+pub mod db;
+pub mod domain;
+pub mod module;
+pub mod protocol;
+pub mod transport;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
