@@ -22,3 +22,28 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Rust build output (backend)
+src-tauri/target
+
+# Secrets / credentials — nunca deben subirse
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*
+*secrets*
+
+# Datos reales del vehículo / capturas de red — pueden contener VIN,
+# ubicación u otra información personal identificable del coche del usuario
+*.db
+*.sqlite
+*.sqlite3
+*.pcap
+*.pcapng
+docs/protocols/captures/
+
+# Logs y telemetría local (definidos en PROJECT_PLAN.md sección 3.7)
+*.log
+logs/
