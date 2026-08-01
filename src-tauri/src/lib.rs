@@ -1,3 +1,10 @@
+mod command_bus;
+mod db;
+mod domain;
+mod module;
+mod protocol;
+mod transport;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
