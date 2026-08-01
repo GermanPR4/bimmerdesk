@@ -14,6 +14,24 @@ BMW Toolbox es una aplicación de escritorio profesional de diagnóstico, monito
 
 **Público objetivo:** inicialmente el propio desarrollador/usuario con un BMW F-Series, con diseño pensado para escalar a producto comercial multi-usuario y multi-marca en el futuro.
 
+### 1.1 MVP de V1 — alcance mínimo, sin excepciones
+
+La arquitectura está preparada para mucho (módulos, IA, multimarca, permisos...) pero **eso es capacidad de crecer, no trabajo pendiente de V1**. El MVP que hay que construir primero es exactamente esto y nada más:
+
+1. Detectar el vehículo.
+2. Leer VIN.
+3. Leer información del vehículo.
+4. Leer DTCs.
+5. Mostrar Live Data.
+6. Guardar historial.
+7. Generar informe.
+
+Nada de esta lista se amplía sin aprobación explícita. Cualquier idea nueva que surja durante el desarrollo (IA, plugins dinámicos, marketplace, más marcas, coding, flash, cloud...) se anota en la sección "Post-V1" del roadmap (sección 6) — no se implementa antes de que este MVP funcione de punta a punta.
+
+**Objetivo medible de V1 (criterio de "terminado"):** *BMW Toolbox V1 estará terminada cuando un usuario conecte un BMW F20 mediante ENET, la aplicación detecte automáticamente el vehículo, lea correctamente VIN, módulos principales, DTCs y datos en tiempo real, permita guardar el historial y generar un informe, todo ello sin modificar ningún parámetro del vehículo.*
+
+Este objetivo es el que decide si una fase se da por cerrada — no "se ve bien" ni "en principio funciona".
+
 ---
 
 ## 2. Decisiones técnicas confirmadas
