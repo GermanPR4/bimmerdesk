@@ -488,5 +488,6 @@ GitHub Actions desde Fase 0, aunque el desarrollo sea individual — detecta reg
 
 ## 13. Estado del proyecto
 
-- **Fase actual:** Planificación cerrada. Arquitectura, gobernanza, principios (`PROJECT_PRINCIPLES.md`) e investigación técnica (`docs/research/ECU_COMMUNICATION_RESEARCH.md`) aprobados por el usuario. Luz verde para empezar a construir.
-- **Siguiente paso:** iniciar Fase 0 (setup del monorepo, arquitectura de módulos, gobernanza y tooling) — prerrequisito de Fase 0B, que es donde se resuelve el mayor riesgo técnico del proyecto (comunicación real con el vehículo).
+- **Fase actual:** **Fase 0 completada.** Repo en `github.com/GermanPR4/bimmerdesk`. Scaffold Tauri 2 + React + TS + Vite; `Module`/`ModuleManifest`/`ModuleRegistry` (ADR 0002/0005); `CommandBus` tipado (ADR 0004); `Transport`/`MockTransport` y `Protocol` (esqueleto, sin `MockEcu` real — eso es Fase 0B); dominio `Manufacturer`/`VehiclePlatform`/`Vehicle` + `Bmw`; SQLite + migraciones numeradas (`001_init`, ADR 0003) + `docs/architecture/database-er.md`; ADRs 0001-0005; i18n base (es/en); infra de tests (9 unit + 2 integration Rust, 2 unit/UI TS); CI GitHub Actions (lint+typecheck+test+build); `CONTRIBUTING.md`; `DESIGN_SYSTEM.md` + tokens CSS ejecutables. Todo verde: `cargo test`, `npm run lint`, `tsc --noEmit`, `npm run test`.
+- **Añadido fuera del checklist original de Fase 0, por necesidad real:** instalación de Rust (rustup) y Visual Studio Build Tools (MSVC, requisito de compilación en Windows) — no estaban en la máquina.
+- **Siguiente paso:** Fase 0B (investigación técnica + `MockEcu`/`MockTransport` reales) — depende de acceso físico al F20 del usuario (cable ENET + Wireshark) para confirmar el framing real de ENET antes de construir `EnetTransport` (Fase 1).
