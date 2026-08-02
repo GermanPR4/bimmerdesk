@@ -32,6 +32,8 @@ Nada de esta lista se amplía sin aprobación explícita. Cualquier idea nueva q
 
 Este objetivo es el que decide si una fase se da por cerrada — no "se ve bien" ni "en principio funciona".
 
+**Nota abierta (sin resolver):** el módulo Maintenance (Fase 6 en el roadmap, sección 6) no aparece en la lista de 7 puntos de arriba — se escribió antes de fijar este MVP estricto. Sigue listado como "V1" en la tabla de módulos (sección 5) y en su fase del roadmap, pero eso podría ser scope creep heredado de antes del guardarraíl. Pendiente decidir: ¿Maintenance es V1 o Post-V1? No bloquea nada ahora mismo (el trabajo actual está parado esperando el cable ENET), pero hay que resolverlo antes de llegar a Fase 6.
+
 ---
 
 ## 2. Decisiones técnicas confirmadas
@@ -295,14 +297,14 @@ No se inicia una fase sin cerrar correctamente la anterior. Cada fase se cierra 
 - **Objetivo:** eliminar la mayor fuente de incertidumbre del proyecto (la capa de comunicación con el vehículo) antes de comprometerse a una implementación real, y desbloquear desarrollo de Fases 2-10 sin depender de tener el coche siempre disponible.
 - **Contexto:** ver `docs/research/ECU_COMMUNICATION_RESEARCH.md` — documento de referencia técnica de esta fase, con la tabla de servicios UDS, matriz de compatibilidad y estrategia de mock ya elaboradas.
 - **Tareas:**
-  - Captura de tráfico real (Wireshark) con el F-Series del usuario para confirmar el framing de ENET (sección 2.6 de la investigación) — punto/puerto exacto, si sigue DoIP estándar o un framing propio de BMW.
-  - Implementación de `MockEcu`: máquina de estados que responde como una ECU real (control de sesión, DIDs configurables, DTCs simulados, respuestas negativas, latencia simulada, escenarios de error).
-  - Implementación de `MockTransport` completo (no solo el esqueleto de Fase 0) conectado a `MockEcu`.
-  - Implementación de `UdsProtocol` (servicios `0x10`, `0x19`, `0x22`, `0x3E`, `0x27` condicional) probada íntegramente contra el mock.
-  - Validación de al menos un DID real (VIN) contra el vehículo, usando ya `EnetTransport` en su versión mínima, para cerrar el ciclo mock → real.
-  - Documentar en `docs/protocols/` cada hallazgo confirmado (framing, DIDs, timings reales de P2Server/P2*Server).
+  - ✅ Implementación de `MockEcu`: máquina de estados que responde como una ECU real (control de sesión, DIDs configurables, DTCs simulados, respuestas negativas, latencia simulada).
+  - ✅ `MockTransport` completo (no solo el esqueleto de Fase 0) conectado a `MockEcu`.
+  - ✅ `UdsProtocol` (`Uds<T: Transport>`: servicios `0x10`, `0x19`, `0x22`, `0x3E`) probado íntegramente contra el mock — sesión extendida → VIN → DTCs → tester present, de punta a punta. `0x27` sigue sin implementar (condicional, ver docs/research sección 3).
+  - ⏳ **Bloqueado, esperando cable ENET del usuario:** captura de tráfico real (Wireshark, ya instalado y verificado con Npcap) con el F-Series para confirmar el framing de ENET (sección 2.6 de la investigación).
+  - ⏳ **Bloqueado:** validación de al menos un DID real (VIN) contra el vehículo, usando `EnetTransport` en su versión mínima, para cerrar el ciclo mock → real.
+  - ⏳ **Bloqueado:** documentar en `docs/protocols/` cada hallazgo confirmado (framing, DIDs, timings reales de P2Server/P2*Server).
 - **Prioridad:** Alta — bloquea Fase 1 con garantías. **Dificultad:** Alta (incertidumbre técnica real, no solo volumen de trabajo). **Dependencias:** Fase 0.
-- **Criterio de cierre:** `UdsProtocol` + `MockEcu`/`MockTransport` funcionando de punta a punta, framing de ENET confirmado por captura propia (no solo por fuentes de terceros), y un VIN real leído del vehículo.
+- **Criterio de cierre:** `UdsProtocol` + `MockEcu`/`MockTransport` funcionando de punta a punta (**hecho**), framing de ENET confirmado por captura propia (**pendiente de hardware**), y un VIN real leído del vehículo (**pendiente de hardware**).
 
 ### Fase 1 — Transporte ENET (F-Series)
 - **Objetivo:** comunicación real con el vehículo a nivel de bytes, ya con el framing confirmado en Fase 0B.
@@ -488,6 +490,9 @@ GitHub Actions desde Fase 0, aunque el desarrollo sea individual — detecta reg
 
 ## 13. Estado del proyecto
 
-- **Fase actual:** **Fase 0 completada.** Repo en `github.com/GermanPR4/bimmerdesk`. Scaffold Tauri 2 + React + TS + Vite; `Module`/`ModuleManifest`/`ModuleRegistry` (ADR 0002/0005); `CommandBus` tipado (ADR 0004); `Transport`/`MockTransport` y `Protocol` (esqueleto, sin `MockEcu` real — eso es Fase 0B); dominio `Manufacturer`/`VehiclePlatform`/`Vehicle` + `Bmw`; SQLite + migraciones numeradas (`001_init`, ADR 0003) + `docs/architecture/database-er.md`; ADRs 0001-0005; i18n base (es/en); infra de tests (9 unit + 2 integration Rust, 2 unit/UI TS); CI GitHub Actions (lint+typecheck+test+build); `CONTRIBUTING.md`; `DESIGN_SYSTEM.md` + tokens CSS ejecutables. Todo verde: `cargo test`, `npm run lint`, `tsc --noEmit`, `npm run test`.
-- **Añadido fuera del checklist original de Fase 0, por necesidad real:** instalación de Rust (rustup) y Visual Studio Build Tools (MSVC, requisito de compilación en Windows) — no estaban en la máquina.
-- **Siguiente paso:** Fase 0B (investigación técnica + `MockEcu`/`MockTransport` reales) — depende de acceso físico al F20 del usuario (cable ENET + Wireshark) para confirmar el framing real de ENET antes de construir `EnetTransport` (Fase 1).
+- **Fase actual:** **Fase 0 completada.** Repo en `github.com/GermanPR4/bimmerdesk`. Scaffold Tauri 2 + React + TS + Vite; `Module`/`ModuleManifest`/`ModuleRegistry` (ADR 0002/0005); `CommandBus` tipado (ADR 0004); dominio `Manufacturer`/`VehiclePlatform`/`Vehicle` + `Bmw`; SQLite + migraciones numeradas (`001_init`, ADR 0003) + `docs/architecture/database-er.md`; ADRs 0001-0005; i18n base (es/en); CI GitHub Actions (lint+typecheck+test+build); `CONTRIBUTING.md`; `DESIGN_SYSTEM.md` + tokens CSS ejecutables.
+- **Fase 0B en curso, parcialmente completada y bloqueada esperando hardware:** `MockEcu` + `MockTransport` completo + `UdsProtocol` (`0x10`/`0x19`/`0x22`/`0x3E`) funcionando de punta a punta contra el mock — ver detalle en sección 6. **Bloqueado esperando el cable ENET del usuario** (ya comprado, en camino): captura de tráfico real, confirmación del framing ENET, lectura de VIN real, cierre formal de la fase.
+- **Preparado en la máquina de desarrollo mientras se espera el cable:** Rust (rustup) + Visual Studio Build Tools (MSVC) instalados; Wireshark + Npcap instalados y verificados (`tshark -D` lista interfaces correctamente) — listos para capturar en cuanto el cable esté conectado y el contacto puesto.
+- **Total actual:** 24 tests Rust (22 unit + 2 integration) + 2 tests TS, todo en verde, clippy limpio.
+- **Decisión pendiente sin resolver:** si el módulo Maintenance (Fase 6) es V1 o Post-V1 — no está en la lista de 7 puntos del MVP estricto (sección 1.1) aunque el roadmap lo liste como V1. No bloquea nada ahora; resolver antes de llegar a Fase 6.
+- **Siguiente paso:** en cuanto llegue el cable — captura Wireshark + validar `EnetTransport` mínimo contra el vehículo real, cerrando Fase 0B. Hasta entonces, proyecto en pausa (así decidido explícitamente, para no adelantar fases que dependen del vehículo real).
