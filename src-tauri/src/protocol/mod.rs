@@ -3,9 +3,12 @@
 //! byte transfer to a `Transport` — this trait never touches a socket or
 //! serial port directly.
 //!
-//! Empty skeleton in Fase 0. The real UDS service subset (`0x10`, `0x19`,
-//! `0x22`, `0x3E`, `0x27` condicional) is implemented in Fase 0B against
-//! `docs/research/ECU_COMMUNICATION_RESEARCH.md` section 3.
+//! UDS service subset (`0x10`, `0x19`, `0x22`, `0x3E`) implemented in
+//! `uds` per `docs/research/ECU_COMMUNICATION_RESEARCH.md` section 3.
+//! `0x27` (Security Access) not implemented — added only if a concrete
+//! V1 DID turns out to require it.
+
+pub mod uds;
 
 use crate::transport::TransportError;
 

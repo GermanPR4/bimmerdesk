@@ -4,6 +4,7 @@
 //! See PROJECT_PLAN.md 3.2 and docs/research/ECU_COMMUNICATION_RESEARCH.md.
 
 pub mod mock;
+pub mod mock_ecu;
 
 use std::time::Duration;
 

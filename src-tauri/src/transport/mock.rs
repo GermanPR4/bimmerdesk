@@ -3,22 +3,33 @@
 //! strategy) and PROJECT_PLAN.md's norm that no phase depends exclusively
 //! on the real vehicle.
 //!
-//! Fase 0 ships the transport shell only, always timing out — there is no
-//! `MockEcu` behind it yet. The state machine that answers like a real ECU
-//! (sessions, DIDs, DTCs, negative responses, simulated latency) is built in
-//! Fase 0B, per its criterio de cierre in PROJECT_PLAN.md.
+//! Without a `MockEcu` attached, every request times out — that's still a
+//! valid, useful configuration (tests the "nothing answers" path). With one
+//! attached (`MockTransport::with_ecu`), requests get routed to it and
+//! answered like a real ECU would.
 
+use super::mock_ecu::MockEcu;
 use super::{Transport, TransportError};
 use std::time::Duration;
 
-#[derive(Default)]
 pub struct MockTransport {
     connected: bool,
+    ecu: Option<MockEcu>,
 }
 
 impl MockTransport {
     pub fn new() -> Self {
-        Self { connected: false }
+        Self { connected: false, ecu: None }
+    }
+
+    pub fn with_ecu(ecu: MockEcu) -> Self {
+        Self { connected: false, ecu: Some(ecu) }
+    }
+}
+
+impl Default for MockTransport {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -37,12 +48,22 @@ impl Transport for MockTransport {
         self.connected
     }
 
-    fn send_receive(&mut self, _data: &[u8], _timeout: Duration) -> Result<Vec<u8>, TransportError> {
+    fn send_receive(&mut self, data: &[u8], timeout: Duration) -> Result<Vec<u8>, TransportError> {
         if !self.connected {
             return Err(TransportError::NotConnected);
         }
-        // No MockEcu behind this yet (Fase 0B) — nothing to answer with.
-        Err(TransportError::Timeout)
+
+        match &mut self.ecu {
+            Some(ecu) => {
+                if ecu.simulated_latency() > timeout {
+                    return Err(TransportError::Timeout);
+                }
+                Ok(ecu.handle_request(data))
+            }
+            // Sin MockEcu configurado: comportamiento de Fase 0, no hay
+            // nada detrás que responda.
+            None => Err(TransportError::Timeout),
+        }
     }
 }
 
@@ -74,6 +95,25 @@ mod tests {
         let mut transport = MockTransport::new();
         transport.connect().unwrap();
         let result = transport.send_receive(&[0x10, 0x01], Duration::from_millis(50));
+        assert_eq!(result, Err(TransportError::Timeout));
+    }
+
+    #[test]
+    fn connected_with_ecu_routes_request_and_answers() {
+        let mut transport = MockTransport::with_ecu(MockEcu::new());
+        transport.connect().unwrap();
+        let response = transport
+            .send_receive(&[0x22, 0xF1, 0x90], Duration::from_millis(50))
+            .unwrap();
+        assert_eq!(&response[..3], &[0x62, 0xF1, 0x90]);
+    }
+
+    #[test]
+    fn ecu_latency_above_timeout_reports_transport_timeout() {
+        let ecu = MockEcu::new().with_latency(Duration::from_millis(200));
+        let mut transport = MockTransport::with_ecu(ecu);
+        transport.connect().unwrap();
+        let result = transport.send_receive(&[0x22, 0xF1, 0x90], Duration::from_millis(50));
         assert_eq!(result, Err(TransportError::Timeout));
     }
 }
